@@ -1,9 +1,11 @@
 <div align="center"><h1>Neurograph</h1><p>Neurological data container format</p></div>
 
 ---
+
 Neurograph, also known as a brain-scan, is a data format containing information used to reconstruct brain connectome. \
 Each file contains a synaptic table used for storing starting neuron state and verifying dendrite table, and a dendrite
 table used for storing connections between neurons in synaptic table.
+
 ---
 # Structures
 ## Synaptic Table
