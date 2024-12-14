@@ -1,67 +1,31 @@
-from .neurograph_v1 import GoogerNeurographV1
-from .neurograph_v2 import GoogerNeurographV2
+from readerwriter import ReaderWriter
+from neurograph_v1 import Neurograph as Neurograph_v1
 
-__all__ = ["Neurograph"]
-
-bases = {
-    1: GoogerNeurographV1,
-    2: GoogerNeurographV2
+VERSIONS = {
+    1: Neurograph_v1
 }
+VERSION_LATEST = 1
+
+def openng(path, mode='r', version=VERSION_LATEST):
+    if mode == 'r':
+        handle = ReaderWriter(path, mode)
+        assert handle.ReadData(4) == b"NRGP", "Invalid starting bytes"
+        version = handle.ReadUShort()
+        if not VERSIONS.get(version):
+            raise ValueError(f"Unknown neurograph version: {version} ({version:02x})")
+        return VERSIONS[version](path, mode, handle)
+    if mode == 'w':
+        handle = ReaderWriter(path, mode)
+        handle.WriteData(b"NRGP")
+        handle.WriteUShort(version)
+        return VERSIONS[version](path, mode, handle)
 
 
-# noinspection PyTypeChecker
-class Neurograph:
-    def __init__(self, path, mode, *args, version=2, **kwargs):
-        stream = open(path, mode + "b")
-        if mode == "r":
-            self.version, self.name, self.author = self.readHeader(stream)
-            if bases.get(self.version):
-                self.base = bases.get(self.version)(path, 'r', self, *args, **kwargs)
-            else:
-                raise ValueError(f"Unknown neurograph version {self.version}")
-        if mode == "w":
-            self.version = version
-            self.name, self.author = args[0:2]
-            if bases.get(self.version):
-                self.base = bases.get(self.version)(path, 'w', self, *args[3:], **kwargs)
-            else:
-                raise ValueError(f"Unknown neurograph version {self.version}")
-            self.writeHeader(stream)
+if __name__ == "__main__":
+    neurograph = openng("test.ng1", 'w')
+    neurograph.headers["name"] = ["hello world"]
+    neurograph.close()
 
-    def flush(self):
-        self.base.flush()
-
-    def close(self):
-        self.base.close()
-
-    def __str__(self):
-        return f"[Neurograph version={self.version} author=\"{self.author}\" name=\"{self.name}\"]"
-
-    def writeHeader(self, stream):
-        stream.write(b"NGRP")
-        stream.write(self.version.to_bytes(1, 'little'))
-        stream.write(len(self.name.encode()).to_bytes(1, 'little'))
-        stream.write(self.name.encode())
-        stream.write(len(self.author.encode()).to_bytes(1, 'little'))
-        stream.write(self.author.encode())
-        stream.flush()
-
-    @staticmethod
-    def readHeader(stream):
-        stream.read(4)
-        version = int.from_bytes(stream.read(1), 'little')
-        name = stream.read(int.from_bytes(stream.read(1), 'little')).decode()
-        author = stream.read(int.from_bytes(stream.read(1), 'little')).decode()
-        return version, name, author
-
-    def getDendrites(self, *args, **kwargs):
-        return self.base.getDendrites(*args, **kwargs)
-
-    def setDendrites(self, *args, **kwargs):
-        return self.base.setDendrites(*args, **kwargs)
-
-    def getSynaptic(self, *args, **kwargs):
-        return self.base.getSynaptic(*args, **kwargs)
-
-    def setSynaptic(self, *args, **kwargs):
-        return self.base.setSynaptic(*args, **kwargs)
+    neurograph = openng("test.ng1", 'r')
+    print(neurograph.headers)
+    neurograph.close()
