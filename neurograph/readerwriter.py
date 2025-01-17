@@ -47,154 +47,107 @@ class ReaderWriter:
     def WriteData(self, data: bytes):
         if self.mode != "w":
             raise IOError("not open in writing mode")
-        self.handle.write(data)
+        return self.handle.write(data)
 
     def ReadData(self, amount: int):
         if self.mode != "r":
             raise IOError("not open in reading mode")
         return self.handle.read(amount)
 
+
     def WriteStringNT(self, string: str):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
         string = [bytes([i]) for i in (string.encode() + b"\0")]
-        self.handle.write(struct.pack("c"*len(string), *string))
+        self.WriteData(struct.pack("c"*len(string), *string))
 
     def ReadStringNT(self) -> str:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
         string = b""
-        read = self.handle.read(1)
+        read = self.ReadData(1)
         while read[0] != 0:
             string += read
-            read = self.handle.read(1)
+            read = self.ReadData(1)
         return string.decode()
 
-    def WriteStringLPS(self, string: str):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        string = [bytes([i]) for i in (string.encode())]
-        self.handle.write(struct.pack("B", len(string)))
-        self.handle.write(struct.pack("c"*len(string), *string))
+    def WriteU8(self, num: int):
+        self.WriteData(struct.pack("B", num))
 
-    def ReadStringLPS(self) -> str:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return self.handle.read(struct.unpack('B', self.handle.read(1))[0]).decode()
+    def ReadU8(self) -> int:
+        return struct.unpack("B", self.ReadData(1))[0]
 
-    def WriteStringLPL(self, string: str):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        string = [bytes([i]) for i in (len(string).to_bytes(2)+string.encode())]
-        self.handle.write(struct.pack("c"*len(string), *string))
 
-    def ReadStringLPL(self) -> str:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return self.handle.read(int.from_bytes(self.handle.read(2))).decode()
+    def WriteI8(self, num: int):
+        self.WriteData(struct.pack("b", num))
 
-    def WriteUByte(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("B", num))
+    def ReadI8(self) -> int:
+        return struct.unpack("b", self.ReadData(1))[0]
 
-    def ReadUByte(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("B", self.handle.read(1))[0]
+    def WriteU16(self, num: int):
+        self.WriteData(struct.pack("H", num))
 
-    def WriteByte(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("b", num))
+    def ReadU16(self) -> int:
+        return struct.unpack("H", self.ReadData(2))[0]
 
-    def ReadByte(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("b", self.handle.read(1))[0]
+    def WriteI16(self, num: int):
+        self.WriteData(struct.pack("h", num))
 
-    def WriteUShort(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("H", num))
+    def ReadI16(self) -> int:
+        return struct.unpack("h", self.ReadData(2))[0]
 
-    def ReadUShort(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("H", self.handle.read(2))[0]
+    def WriteU32(self, num: int):
+        self.WriteData(struct.pack("I", num))
 
-    def WriteShort(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("h", num))
+    def ReadU32(self) -> int:
+        return struct.unpack("I", self.ReadData(4))[0]
 
-    def ReadShort(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("h", self.handle.read(2))[0]
+    def WriteI32(self, num: int):
+        self.WriteData(struct.pack("i", num))
 
-    def WriteUInt(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("I", num))
+    def ReadI32(self) -> int:
+        return struct.unpack("i", self.ReadData(4))[0]
 
-    def ReadUInt(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("I", self.handle.read(4))[0]
+    def WriteU64(self, num: int):
+        self.WriteData(struct.pack("Q", num))
 
-    def WriteInt(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("i", num))
+    def ReadU64(self) -> int:
+        return struct.unpack("Q", self.ReadData(8))[0]
 
-    def ReadInt(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("i", self.handle.read(4))[0]
+    def WriteI64(self, num: int):
+        self.WriteData(struct.pack("q", num))
 
-    def WriteULong(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("Q", num))
+    def ReadI64(self) -> int:
+        return struct.unpack("q", self.ReadData(8))[0]
 
-    def ReadULong(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("Q", self.handle.read(8))[0]
-
-    def WriteLong(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("q", num))
-
-    def ReadLong(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("q", self.handle.read(8))[0]
 
     def WriteBool(self, bool: bool):
-        self.WriteUByte(0xFF if bool else 0x00)
+        self.WriteU8(0xFF if bool else 0x00)
     
     def ReadBool(self) -> bool:
-        return self.ReadUByte() == 0xFF
+        return self.ReadU8() == 0xFF
+    
 
     def WriteFloat(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("f", num))
+        self.WriteData(struct.pack("f", num))
 
     def ReadFloat(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("f", self.handle.read(1))[0]
+        return struct.unpack("f", self.ReadData(1))[0]
 
     def WriteDouble(self, num: int):
-        if self.mode != "w":
-            raise IOError("not open in writing mode")
-        self.handle.write(struct.pack("d", num))
+        self.WriteData(struct.pack("d", num))
 
     def ReadDouble(self) -> int:
-        if self.mode != "r":
-            raise IOError("not open in reading mode")
-        return struct.unpack("d", self.handle.read(1))[0]
+        return struct.unpack("d", self.ReadData(1))[0]
+    
+    def WriteStringLPS(self, string: str):
+        string = [bytes([i]) for i in (string.encode())]
+        self.WriteU8(len(string))
+        self.WriteData(struct.pack("c"*len(string), *string))
+
+    def ReadStringLPS(self) -> str:
+        return self.ReadData(self.ReadU8()).decode()
+
+    def WriteStringLPL(self, string: str):
+        string = [bytes([i]) for i in (string.encode())]
+        self.WriteU16(len(string))
+        self.WriteData(struct.pack("c"*len(string), *string))
+
+    def ReadStringLPL(self) -> str:
+        return self.ReadData(self.ReadU16()).decode()
