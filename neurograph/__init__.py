@@ -1,5 +1,6 @@
 from .readerwriter import ReaderWriter
 from .neurograph_v1 import Neurograph as Neurograph_v1
+from .neurograph_base import NeurographBase
 
 VERSIONS = {
     1: Neurograph_v1

@@ -15,7 +15,7 @@ else:
     print("neurograph read successful")
 
 print("reading old data...", end="")
-old_worm = Neurograph(f"../vivarium/modules/{file}/{file}.ng", 'r')
+old_worm = Neurograph(f"./{file}.ng", 'r')
 dendrites = old_worm.getDendrites()
 synaptic = old_worm.getSynaptic()
 old_worm.close()
@@ -37,7 +37,8 @@ for dendrite in dendrites:
     syn = {}
     new_synaptic[index.index(dendrite['name'])] = syn
     for act in dendrite['activations']:
-        if act['excited'] not in index: continue
+        if act['excited'] not in index:
+            index.append(act['excited'])
         syn[index.index(act['excited'])] = act['amount'] * (-1 if act['mode'] == 1 else 1)
 print("done")
 
