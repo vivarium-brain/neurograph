@@ -1,16 +1,28 @@
+import io
+import os
 import struct
 
 
 class ReaderWriter:
-    def __init__(self, path: str, mode: str):
-        self.path = path
+    def __init__(self, handle: io.BytesIO, mode: str):
+        if mode != "w" and mode != "r":
+            raise Exception("unexpected mode \"" + mode + "\"")
+        self.handle = handle
         self.mode = mode
+
+    @classmethod
+    def fromFile(cls, path: str, mode: str):
         if mode == "w":
-            self.handle = open(self.path, "wb")
+            handle = open(path, "wb")
         elif mode == "r":
-            self.handle = open(self.path, "rb")
+            handle = open(path, "rb")
         else:
             raise Exception("unexpected mode \"" + mode + "\"")
+        return cls(handle, mode)
+
+    @classmethod
+    def fromNoFile(cls, data: bytes, mode: str):
+        return cls(io.BytesIO(data), mode)
 
     def close(self):
         self.flush()
@@ -24,6 +36,13 @@ class ReaderWriter:
 
     def tell(self):
         return self.handle.tell()
+
+    def size(self):
+        tell = self.tell()
+        self.handle.seek(0, os.SEEK_END)
+        size = self.tell()
+        self.seek(tell)
+        return size
 
     def WriteData(self, data: bytes):
         if self.mode != "w":
@@ -54,13 +73,14 @@ class ReaderWriter:
     def WriteStringLPS(self, string: str):
         if self.mode != "w":
             raise IOError("not open in writing mode")
-        string = [bytes([i]) for i in (len(string).to_bytes(1)+string.encode())]
+        string = [bytes([i]) for i in (string.encode())]
+        self.handle.write(struct.pack("B", len(string)))
         self.handle.write(struct.pack("c"*len(string), *string))
 
     def ReadStringLPS(self) -> str:
         if self.mode != "r":
             raise IOError("not open in reading mode")
-        return self.handle.read(int.from_bytes(self.handle.read(1))).decode()
+        return self.handle.read(struct.unpack('B', self.handle.read(1))[0]).decode()
 
     def WriteStringLPL(self, string: str):
         if self.mode != "w":
@@ -153,35 +173,28 @@ class ReaderWriter:
             raise IOError("not open in reading mode")
         return struct.unpack("q", self.handle.read(8))[0]
 
+    def WriteBool(self, bool: bool):
+        self.WriteUByte(0xFF if bool else 0x00)
+    
+    def ReadBool(self) -> bool:
+        return self.ReadUByte() == 0xFF
 
-if __name__ == "__main__":
-    import os
-    test = ReaderWriter("test.txt", "w")
-    test.WriteStringNT("hello world")
-    test.WriteStringNT("hello\0 world")
-    test.WriteUByte(1)
-    test.WriteByte(-1)
-    test.WriteUShort(1)
-    test.WriteShort(-1)
-    test.WriteUInt(1)
-    test.WriteInt(-1)
-    test.WriteULong(1)
-    test.WriteLong(-1)
-    test.close()
+    def WriteFloat(self, num: int):
+        if self.mode != "w":
+            raise IOError("not open in writing mode")
+        self.handle.write(struct.pack("f", num))
 
-    test = ReaderWriter("test.txt", "r")
-    assert test.ReadStringNT() == "hello world"
-    assert test.ReadStringNT() == "hello"
-    assert test.ReadStringNT() == " world"
-    assert test.ReadUByte() == 1
-    assert test.ReadByte() == -1
-    assert test.ReadUShort() == 1
-    assert test.ReadShort() == -1
-    assert test.ReadUInt() == 1
-    assert test.ReadInt() == -1
-    assert test.ReadULong() == 1
-    assert test.ReadLong() == -1
-    test.close()
+    def ReadFloat(self) -> int:
+        if self.mode != "r":
+            raise IOError("not open in reading mode")
+        return struct.unpack("f", self.handle.read(1))[0]
 
-    print("ok!")
-    os.remove("test.txt")
+    def WriteDouble(self, num: int):
+        if self.mode != "w":
+            raise IOError("not open in writing mode")
+        self.handle.write(struct.pack("d", num))
+
+    def ReadDouble(self) -> int:
+        if self.mode != "r":
+            raise IOError("not open in reading mode")
+        return struct.unpack("d", self.handle.read(1))[0]

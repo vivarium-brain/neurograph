@@ -9,11 +9,13 @@ HEADERS = {
 }
 
 class NeurographBase:
-    def __init__(self, path, mode='r', handle=None):
+    def __init__(self, path, mode='r', flat=True, handle=None):
         self.headers = {}
+        self.sections = {}
 
         self.path = path
         self.mode = mode
+        self.flat = flat
 
         if handle:
             self.handle = handle
@@ -22,10 +24,12 @@ class NeurographBase:
 
         if mode == "r":
             self.ReadHeaders()
+            self.ReadSections()
 
     def close(self):
         if self.mode == 'w':
             self.WriteHeaders()
+            self.WriteSections()
         self.handle.close()
 
     def HEAD_WriteSection(self, name: str, *data):
@@ -49,3 +53,12 @@ class NeurographBase:
         self.handle.WriteUByte(len(self.headers))
         for name, data in self.headers.items():
             self.HEAD_WriteSection(name, *data)
+
+    def ReadSections(self):
+        while self.handle.tell() < self.handle.size():
+            name, *data = self.BODY_ReadSection()
+            self.sections[name] = data
+
+    def WriteSections(self):
+        for name, data in self.sections.items():
+            self.BODY_WriteSection(name, *data)
