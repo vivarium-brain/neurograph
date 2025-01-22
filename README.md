@@ -2,7 +2,6 @@
 
 [![powered by worm brains](https://img.shields.io/badge/powered%20by-worm%20brains-0077ff?style=for-the-badge&logo=python&logoColor=%230077ff)](https://github.com/vivarium-brain/vivarium/blob/main/neurographs/worm.ng)
 [![built with existential horror](https://img.shields.io/badge/built%20with-existential%20horror-ff7700?style=for-the-badge)](https://qntm.org/mmacevedo)
-[![designed on a napkin](https://img.shields.io/badge/designed%20on-a%20napkin%20during%20breakfast-008833?style=for-the-badge)](https://www.google.com/search?q=napkin)
 
 
 ---
