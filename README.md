@@ -31,19 +31,23 @@ StringLPS {
     ubyte length;
     char[length] string;
 }
+
 Header {
     ubyte hid;   // 1 byte: header id
     char[] data; // header data...
 }
+
 Section {
     ubyte sid;       // 1 byte: section id
     ulong crc;       // 8 bytes: section crc
     uint size;       // 4 bytes: section size
     char[size] data; // section data...
 }
+
 HeaderName extends Header {
     StringLPS name;
 }
+
 NeurographBase {
     uint Signature = "NGRP";      // 4 bytes: always the same, used to identify neurograph
     ushort version;               // 2 bytes: neurograph version
@@ -59,7 +63,6 @@ Created 17th january 2025.
 
 Rewritten Neurograph format to allow for partial backwards compability, easier introduction of new features or sections, and CRC-validated structures.
 ```
-
 SEC_Synapse {
     ulong neurite_id;
     int weight;
