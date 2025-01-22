@@ -1,99 +1,18 @@
-<div align="center"><h1>Neurograph</h1><p>Neurological data container format</p></div>
+<div align="center"><h1>Neurograph</h1><p>Brain connectome structure saving format</p></div>
+[![badge](https://img.shields.io/badge/powered%20by-worm%20brains-0077ff?style=for-the-badge&logo=python&logoColor=%230077ff)](https://github.com/vivarium-brain/vivarium/blob/main/neurographs/worm.ng)
 
 ---
 
-Neurograph, also known as a brain-scan, is a data format containing information used to reconstruct brain connectome. \
-Each file contains a synaptic table used for storing starting neuron state and verifying dendrite table, and a dendrite
-table used for storing connections between neurons in synaptic table.
+Neurograph, also unformally named a "brainscan", is a data format containing information used to reconstruct brain connectome. \
+Each neurograph should contain at least a `name` header and a `synaptic` section, and may contain `index` section.
 
 ---
-# Structures
-## Synaptic Table
-Synaptic table contains starting neurons state and verifies integrity of dendrite table by checking if neurons specified
-in dendrite inputs/outputs are correctly specified.
-
----
-# Versions
-## Version 1
-- Created 23rd september 2024.
-- Deprecated in favor of Version 2.
-
-First neurograph container version. Highly space-inefficient. Kept packaged for legacy files support.
-```
-Version = 0x01
-Structure {
-    Header    (required)
-    Synaptic  (required)
-    Dendrites (required)
-}
-
-Synaptic {
-    Count: ulong (4b uint)
-    Neurite (xCount) {
-        NameLength: ubyte (1b uint)
-        NameString: bytes (xNameLength)
-        Amount: ubyte (1b uint)
-    }
-}
-
-Dendrites {
-    Count: ulong (4b uint)
-    Dendrite (xCount) {
-        OwnerNameLength: ubyte (1b uint)
-        OwnerNameSring: bytes (xOwnerNameLength)
-        ConnectionsCount: ulong (4b uint)
-        DendriteConnection (xConnectionsCount) {
-            ConnectionNameLength: ubyte (1b uint)
-            ConnectionNameSring: bytes (xConnectionNameLength)
-            ConnectionAmount: ubyte (1b uint)
-            ConnectionMode: ubyte (1b uint)
-        }
-    }
-}
-```
-
-## Version 2
-- Created 16th november 2024.
-- Default writer version.
-
-As of 16th november 2024 latest neurograph container, should be used for all future neurographs.
-```
-Version = 0x02
-Structure {
-    Header          (required)
-    LZMA_Compressed (required) {
-        IndexTable  (required)
-        Synaptic    (required)
-        Dendrites   (required)
-    }
-}
-
-IndexTable {
-    Count: ulong (4b uint)
-    Names (xCount) {
-        NameLength: ubyte (1b uint)
-        NameString: bytes (xNameLength)
-    }
-}
-
-Synaptic {
-    Count: ulong (4b uint)
-    Neurite (xCount) {
-        Index: ulong (4b uint)
-        Amount: ubyte (1b uint)
-    }
-}
-
-Dendrites {
-    Count: ulong (4b uint)
-    Dendrite (xCount) {
-        OwnerIndex: ulong (4b uint)
-        ConnectionsCount: ulong (4b uint)
-        DendriteConnection (xConnectionsCount) {
-            ConnectionIndex: ulong (4b uint)
-            ConnectionAmount: ubyte (1b uint)
-            ConnectionMode: ubyte (1b uint)
-        }
-    }
-}
-```
+# Headers and Sections
+## Headers
+Headers are small data packets at the start of neurograph file used to give small amounts of data about the neurograph. \
+Headers are not CRC-verified, have a maximum size of 255B and have a limited count of 255 headers per neurograph. \
+Example of a header usage would be neurograph name, author, or creation/scanning date.
+## Sections
+Sections are data packets in the body of neurograph file used to store actual data. \
+Sections are CRC-verified, have a maximum size of 4GiB and have unlimited count per neurograph. \
+Example of a section usage would be connectome synaptic data or ID-to-name index table.
