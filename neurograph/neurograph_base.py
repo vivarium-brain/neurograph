@@ -43,9 +43,9 @@ class NeurographBase:
         writer(self, *data)
 
     def HEAD_ReadSection(self):
-        sid = self.handle.ReadU8()
-        name, reader = HEADERS.get(sid, [None, None])
-        assert reader != None, f"Unknown header: {sid}"
+        hid = self.handle.ReadU8()
+        name, reader = HEADERS.get(hid, [None, None])
+        assert reader != None, f"Unknown header: {hid}"
         return name, reader(self)
 
     def BODY_WriteSection(self, name: str, *data):
@@ -66,11 +66,11 @@ class NeurographBase:
         self.handle.WriteData(raw)
 
     def BODY_ReadSection(self):
-        hid = self.handle.ReadU8()
+        sid = self.handle.ReadU8()
         crc = self.handle.ReadI64()
         size = self.handle.ReadU32()
-        name, reader = self.SECTIONS.get(hid)
-        assert reader != None, f"Unknown section: {hid}"
+        name, reader = self.SECTIONS.get(sid)
+        assert reader != None, f"Unknown section: {sid}"
         raw = self.handle.ReadData(size)
 
         real_crc = zlib.crc32(raw)
