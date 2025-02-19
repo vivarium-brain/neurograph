@@ -1,5 +1,5 @@
 all:
-	@mkdir build
+	@mkdir -p build
 	@make --no-print-directory clean
 	@mkdir build/lib build/obj build/bin
 	@make --no-print-directory libneurograph
