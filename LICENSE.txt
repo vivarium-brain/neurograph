@@ -1,0 +1,59 @@
+LICENSE FOR VIVARIUM SIM – NEUROGRAPH SIMULATION SOFTWARE
+
+  This software, Vivarium ("Software"), is licensed under the terms of the base
+  MIT license, subject to the following additional restrictions:
+
+  1. Permitted Use:
+    The Software may be used for research, educational, and other non-commercial
+    purposes, provided that all use complies with the terms of this license and
+    the base MIT license.
+
+  2. Prohibited Use:
+    The Software may NOT be used in any way that:
+    - Inflicts harm or suffering on simulated brains: This explicitly prohibits
+      the creation, modification, or distribution of any modules, scripts, or
+      additions to the Software that simulate pain, distress, or any form of
+      suffering for the simulated brain data. This includes, but is not limited
+      to, simulations of injury, disease, or any other condition causing harm.
+    - Violates privacy or confidentiality: Any use of the Software must comply
+      with all applicable laws and regulations regarding the privacy and
+      confidentiality of personal data, particularly concerning potentially
+      loaded human brain scan data.
+    - Is illegal or unethical: The Software may not be used for any purpose that
+      is illegal or unethical, as determined by the applicable laws and ethical
+      guidelines of the jurisdiction where the Software is used.
+    - Is for commercial purposes without explicit written consent: Commercial
+      use requires prior written permission from googer_
+
+  3. Data Usage Restrictions:
+    The Software may only be used with brain scan data obtained legally and
+    ethically, with the appropriate consent and permissions from the data
+    subjectsz their representstives or authorities whenever possible. Any use of
+    such data must comply with all applicable privacy regulations and ethical
+    guidelines.
+
+  4. Modification and Redistribution:
+    You are permitted to modify and redistribute the Software under the terms
+    of the base MIT license, provided that all modifications and redistributions
+    comply with the restrictions outlined in sections 2 and 3 of this license.
+    You must clearly indicate any modifications made to the Software.
+
+  5. Disclaimer of Warranty:
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+  6. Governing Law:
+    This license shall be governed by and construed in accordance with the laws of
+    where Software is used.
+
+  7. Termination:
+    This license may be terminated by googer_ at any time if you violate any of its
+    terms.
+
+  By using, modifying, or distributing this Software, you agree to be bound by the
+  terms of this license.
