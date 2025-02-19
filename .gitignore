@@ -1,7 +1,2 @@
-.idea/
-__pycache__/
-*.ng*
-.venv/
-venv/
-*.py[cod]
-*$py.class
+build/*
+test.ng
