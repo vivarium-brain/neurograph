@@ -1,13 +1,13 @@
 all:
 	@mkdir -p build
+	@mkdir -p build/lib build/obj build/bin build/elib
 	@make --no-print-directory clean
-	@mkdir build/lib build/obj build/bin
 	@make --no-print-directory libneurograph
 	@make --no-print-directory main
 
 clean:
 	@echo -e "\033[0;32mcleaning\033[0m"
-	rm -rf build/* test.ng
+	rm -rf build/lib/* build/obj/* build/bin/* test.ng
 
 main: build/lib/libneurograph.so src/main.cpp
 	@echo -e "\033[0;32mbuilding main\033[0m"
@@ -23,9 +23,9 @@ libneurograph: src/neurograph/Neurograph.cpp src/neurograph/versions/NGv1.cpp
 
 run:
 	@echo -e "\033[0;32mrunning main\033[0m"
-	LD_LIBRARY_PATH=build/lib build/bin/main
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:build/elib:build/lib build/bin/main
 
 debug:
 	@echo -e "\033[0;32mdebugging main\033[0m"
-	LD_LIBRARY_PATH=build/lib gdb build/bin/main
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:build/elib:build/lib gdb build/bin/main
 

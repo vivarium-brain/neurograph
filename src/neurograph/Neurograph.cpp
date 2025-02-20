@@ -7,6 +7,7 @@
 #include <iostream>
 
 namespace ng {
+    Neurograph::Neurograph() {}
     Neurograph::Neurograph(std::string filepath, std::ios_base::openmode openmode) {
         this->filepath = filepath;
         this->writemode = openmode == std::ios::out;
@@ -100,12 +101,16 @@ namespace ng {
 
     void Neurograph::setNeuriteCount(uint neurons) {
         this->neurons = neurons;
-        this->synmatrix = new ng_weight[this->neurons * this->neurons];
+        this->weights.clear();
     }
     uint Neurograph::getNeuriteCount() {return this->neurons;}
 
-    void       Neurograph::setSynapticMatrix(ng_weight synmatrix[]) {this->synmatrix = synmatrix;}
-    ng_weight* Neurograph::getSynapticMatrix() {return this->synmatrix;}
+    void                      Neurograph::setSynapticWeights(uint neuron, std::map<uint, ng_weight> weights) {
+        (this->weights)[neuron] = weights;
+    }
+    std::map<uint, ng_weight> Neurograph::getSynapticWeights(uint neuron) {
+        return (this->weights)[neuron];
+    }
     void         Neurograph::setSynapticIndex(std::string synindex[]) {this->synindex = synindex;}
     std::string* Neurograph::getSynapticIndex() {return this->synindex;}
 

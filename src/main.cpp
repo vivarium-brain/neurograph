@@ -9,11 +9,6 @@ void test_write() {
     neurograph.setName("DUMMY");
     neurograph.setAuthor("googer_");
 
-    ng_weight synmatrix[] = {
-         0, 10,  0, // neuron #1 activates #2
-         0,  0, 10, //        #2 activates #3
-        10,  0,  0  //    and #3 activates #1
-    };
     std::string synindex[] = {
         "T1", "T2", "T3"
     };
@@ -21,7 +16,9 @@ void test_write() {
     uint musleft[] = {1};
     uint musright[] = {3};
     neurograph.setNeuriteCount(3);
-    neurograph.setSynapticMatrix(synmatrix);
+    neurograph.setSynapticWeights(0, {{1, 10}});
+    neurograph.setSynapticWeights(1, {{2, 10}});
+    neurograph.setSynapticWeights(2, {{0, 10}});
     neurograph.setSynapticIndex(synindex);
     //neurograph.unsetInitialState();
     neurograph.setInitialState(initstate);
@@ -39,14 +36,13 @@ void test_read() {
     std::cout << "Flat:      " << (neurograph.isFlat() ? "yes" : "no") << std::endl;
     uint neurons = neurograph.getNeuriteCount();
     std::cout << "Neurons: " << neurons << std::endl;
-    ng_weight* synmatrix = neurograph.getSynapticMatrix();
     std::string* synindex = neurograph.getSynapticIndex();
 
-    std::cout << "Synaptic Matrix: " << std::endl;
+    std::cout << "Synaptic Weights: " << std::endl;
     for (int i=0; i < neurons; i++) {
         std::cout << "  Neuron #" << i+1 << " (" << synindex[i] << "): ";
-        for (int j=0; j < neurons; j++) {
-            std::cout << synmatrix[i * neurons + j] << " ";
+        for (const auto& [key, value] : neurograph.getSynapticWeights(i)) {
+            std::cout << "["<<key<<"]="<<value << " ";
         }
         std::cout << std::endl;
     }

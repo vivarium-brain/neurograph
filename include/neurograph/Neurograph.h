@@ -1,12 +1,14 @@
 #ifndef NG_NEUROGRAPH_H
 #define NG_NEUROGRAPH_H
 
-#include <RWStream.h>
+#include "RWStream.h"
 
 #include <string>
 #include <fstream>
 #include <unordered_map>
+#include <map>
 #include <stdint.h>
+#include <vector>
 
 #define ng_weight int16_t
 #define ng_activation int32_t
@@ -19,21 +21,23 @@ namespace ng {
         public:
             Neurograph(std::string filepath, std::ios_base::openmode openmode);
             ~Neurograph();
+            Neurograph();
         private:
             // file data
             std::string filepath; // neurograph filename
             bool writemode; // was opened in writing mode
             ng_version version = ng_version_latest; // neurograph version
             // neurograph data
-            bool flat;             // was saved as flat neurograph (no initial state info)
+            bool flat;                // was saved as flat neurograph (no initial state info)
             ng_activation* initstate; // initial state
             ng_uactivation threshold; // neurite activation threshold
-            std::string name   = ""; // neurograph name
-            std::string author = ""; // neurograph author or credit info
-            uint neurons;          // neuron count
-            ng_weight* synmatrix;  // n*neurons+m = weight for neuron n to m
+            std::string name   = "";  // neurograph name
+            std::string author = "";  // neurograph author or credit info
+            uint neurons;             // neuron count
+            std::unordered_map<uint, std::map<uint, ng_weight>> weights;
+                // neuron id -> weights
             std::string* synindex; // maps id -> name
-            std::unordered_map<std::string, uint*> muscles = {}; // maps group -> neurons
+            std::unordered_map<std::string, uint*> muscles = {};     // maps group -> neurons
             std::unordered_map<std::string, uint> musclessizes = {}; // maps group -> count
 
             // version reading functions
@@ -54,10 +58,11 @@ namespace ng {
             void         setAuthor(std::string author);
             std::string  getAuthor();
 
+            void                      setSynapticWeights(uint neuron, std::map<uint, ng_weight> weights);
+            std::map<uint, ng_weight> getSynapticWeights(uint neuron);
+
             void           setNeuriteCount(uint neurons);
             uint           getNeuriteCount();
-            void           setSynapticMatrix(ng_weight synmatrix[]);
-            ng_weight*     getSynapticMatrix();
             void           setSynapticIndex(std::string synindex[]);
             std::string*   getSynapticIndex();
             void           setInitialState(ng_activation initstate[]);

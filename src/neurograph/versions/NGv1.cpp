@@ -13,10 +13,18 @@ namespace ng {
 
         // neuron count
         this->neurons = stream.readU64();
-        // synmatrix
-        this->synmatrix = new ng_weight[this->neurons * this->neurons];
-        for (int i = 0; i < this->neurons * this->neurons; i++) {
-            this->synmatrix[i] = stream.readI16();
+        // synweights
+        uint weighted = stream.readU64();
+        for (int i = 0; i < weighted; i++) {
+            uint key = stream.readU64();
+            std::map<uint, ng_weight> m;
+            uint size = stream.readU64();
+            for (int j = 0; j < size; j++) {
+                uint neu = stream.readU64();
+                ng_weight weight = stream.readI16();
+                m[neu] = weight;
+            }
+            (this->weights)[key] = m;
         }
         // synindex
         this->synindex = new std::string[this->neurons];
@@ -55,9 +63,15 @@ namespace ng {
 
         // neuron count
         stream.writeU64(this->neurons);
-        // synmatrix
-        for (int i = 0; i < this->neurons * this->neurons; i++) {
-            stream.writeI16(this->synmatrix[i]);
+        // synweights
+        stream.writeU64(this->weights.size());
+        for (const auto& [key, value] : this->weights) {
+            stream.writeU64(key);
+            stream.writeU64(value.size());
+            for (const auto& [key, value] : value) {
+                stream.writeU64(key);
+                stream.writeI16(value);
+            }
         }
         // synindex
         for (int i = 0; i < this->neurons; i++) {
